@@ -18,11 +18,20 @@ package com.example.androiddevchallenge
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
 class MainActivity : AppCompatActivity() {
@@ -40,7 +49,57 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun MyApp() {
     Surface(color = MaterialTheme.colors.background) {
-        Text(text = "Ready... Set... GO!")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_title),
+                contentDescription = "",
+                modifier = Modifier.width(200.dp),
+                contentScale = ContentScale.FillWidth
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Box(
+                modifier = Modifier.size(250.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_bg),
+                    contentDescription = "",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillWidth
+                )
+
+                Text(
+                    text = "00:03:23",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_restart),
+                contentDescription = "",
+                modifier = Modifier.width(28.dp),
+                contentScale = ContentScale.FillWidth
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_start),
+                contentDescription = "",
+                modifier = Modifier.width(88.dp),
+                contentScale = ContentScale.FillWidth
+            )
+        }
     }
 }
 
