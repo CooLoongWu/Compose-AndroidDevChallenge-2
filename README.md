@@ -1,18 +1,23 @@
-# Put title of your app here
+# CountDownTimer[倒计时器]
 
 <!--- Replace <OWNER> with your Github Username and <REPOSITORY> with the name of your repository. -->
 <!--- You can find both of these in the url bar when you open your repository in github. -->
-![Workflow result](https://github.com/<OWNER>/<REPOSITORY>/workflows/Check/badge.svg)
+![Workflow result](https://github.com/CooLoongWu/Compose-AndroidDevChallenge-2/workflows/Check/badge.svg)
 
 
 ## :scroll: Description
 <!--- Describe your app in one or two sentences -->
-
+A simple countdown timer application.
+一个简单的倒计时器应用。
 
 ## :bulb: Motivation and Context
 <!--- Optionally point readers to interesting parts of your submission. -->
 <!--- What are you especially proud of? -->
+Compose is really, really powerful!!!
+Compose真的真的非常强大！！！
 
+My blog address is: https://blog.csdn.net/u010976213
+我的博客地址是：https://blog.csdn.net/u010976213
 
 ## :camera_flash: Screenshots
 <!-- You can add more screenshots here if you like -->
