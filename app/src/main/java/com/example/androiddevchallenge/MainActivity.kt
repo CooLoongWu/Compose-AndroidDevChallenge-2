@@ -19,23 +19,20 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -72,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         if (countDownTimer != null) {
             countDownTimer?.cancel()
-            countDownTimer = null;
+            countDownTimer = null
         }
     }
 }
@@ -139,7 +136,6 @@ fun MyApp() {
                     contentScale = ContentScale.FillWidth
                 )
 
-
                 Row(
                     verticalAlignment = Alignment.Bottom
                 ) {
@@ -149,7 +145,7 @@ fun MyApp() {
                         fontWeight = FontWeight.ExtraBold
                     )
 
-                    //秒数的两个数字
+                    // 秒数的两个数字
                     TextSecond(timer = timerSecond1)
                     TextSecond(timer = timerSecond2)
                 }
@@ -163,7 +159,6 @@ fun MyApp() {
                 modifier = Modifier
                     .width(36.dp)
                     .clickable {
-
                     },
                 contentScale = ContentScale.FillWidth
             )
@@ -186,13 +181,13 @@ fun MyApp() {
 
 @Composable
 fun TextSecond(timer: MutableState<Int>) {
-    //竖直方向上位移距离
+    // 竖直方向上位移距离
     val offsetY = 80.dp
 
-    //值从0-9
+    // 值从0-9
 //    val timer = remember { mutableStateOf(0) }
 
-    //偶数数字（0,2,4,6,8,）
+    // 偶数数字（0,2,4,6,8,）
     val evenAlpha = animateFloatAsState(targetValue = if (timer.value % 2 == 0) 1f else 0f)
     val evenOffset = if (timer.value % 2 == 0) {
         -offsetY * (1 - evenAlpha.value)
@@ -200,7 +195,7 @@ fun TextSecond(timer: MutableState<Int>) {
         offsetY * (1 - evenAlpha.value)
     }
 
-    //奇数数字（1,3,5,7,9）
+    // 奇数数字（1,3,5,7,9）
     val oddAloha = animateFloatAsState(targetValue = if (timer.value % 2 != 0) 1f else 0f)
     val oddOffset = if (timer.value % 2 != 0) {
         -offsetY * (1 - oddAloha.value)
@@ -268,7 +263,6 @@ fun DarkPreview() {
     }
 }
 
-
-//fun getFormatNumber(number: Int): String {
+// fun getFormatNumber(number: Int): String {
 //        if (number>9)
-//}
+// }
