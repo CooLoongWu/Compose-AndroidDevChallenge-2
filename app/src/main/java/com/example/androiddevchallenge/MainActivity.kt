@@ -16,11 +16,11 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -31,6 +31,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,14 +45,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
+var countDownTimer: CountDownTimer? = null
+
 @ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MyTheme {
                 MyApp()
             }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (countDownTimer != null) {
+            countDownTimer?.cancel()
+            countDownTimer = null;
         }
     }
 }
@@ -60,13 +72,116 @@ class MainActivity : AppCompatActivity() {
 @ExperimentalAnimationApi
 @Composable
 fun MyApp() {
-    var visible = remember { mutableStateOf(true) }
+    val timerMinute = remember { mutableStateOf(0) }
+    val timerSecond1 = remember { mutableStateOf(0) }
+    val timerSecond2 = remember { mutableStateOf(0) }
 
+    countDownTimer = object : CountDownTimer(61 * 1000, 1000) {
+
+        override fun onTick(millisUntilFinished: Long) {
+
+            val day = millisUntilFinished / (1000 * 24 * 60 * 60)
+            val hour =
+                (millisUntilFinished - day * (1000 * 24 * 60 * 60)) / (1000 * 60 * 60)
+
+            val minute =
+                (millisUntilFinished - day * (1000 * 24 * 60 * 60) - hour * (1000 * 60 * 60)) / (1000 * 60)
+
+            val second =
+                (millisUntilFinished - day * (1000 * 24 * 60 * 60) - hour * (1000 * 60 * 60) - minute * (1000 * 60)) / 1000
+
+            timerMinute.value = minute.toInt()
+            if (second > 9) {
+                timerSecond1.value = (second / 10).toInt()
+                timerSecond2.value = (second % 10).toInt()
+            } else {
+                timerSecond1.value = 0
+                timerSecond2.value = second.toInt()
+            }
+        }
+
+        override fun onFinish() {}
+    }
+
+    Surface(color = MaterialTheme.colors.background) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_title),
+                contentDescription = "",
+                modifier = Modifier.width(260.dp),
+                contentScale = ContentScale.FillWidth
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Box(
+                modifier = Modifier.size(280.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_bg),
+                    contentDescription = "",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillWidth
+                )
+
+
+                Row(
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Text(
+                        text = "00:",
+                        fontSize = 72.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+
+                    //秒数的两个数字
+                    TextSecond(timer = timerSecond1)
+                    TextSecond(timer = timerSecond2)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_restart),
+                contentDescription = "",
+                modifier = Modifier
+                    .width(36.dp)
+                    .clickable {
+
+                    },
+                contentScale = ContentScale.FillWidth
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_start),
+                contentDescription = "",
+                modifier = Modifier
+                    .width(100.dp)
+                    .clickable {
+                        countDownTimer?.start()
+                    },
+                contentScale = ContentScale.FillWidth
+            )
+        }
+    }
+}
+
+@Composable
+fun TextSecond(timer: MutableState<Int>) {
     //竖直方向上位移距离
-    val offsetY = 40.dp
+    val offsetY = 80.dp
 
     //值从0-9
-    val timer = remember { mutableStateOf(0) }
+//    val timer = remember { mutableStateOf(0) }
 
     //偶数数字（0,2,4,6,8,）
     val evenAlpha = animateFloatAsState(targetValue = if (timer.value % 2 == 0) 1f else 0f)
@@ -84,163 +199,45 @@ fun MyApp() {
         offsetY * (1 - oddAloha.value)
     }
 
-    Surface(color = MaterialTheme.colors.background) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Spacer(modifier = Modifier.height(48.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_title),
-                contentDescription = "",
-                modifier = Modifier.width(240.dp),
-                contentScale = ContentScale.FillWidth
-            )
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-
-
-            Box(
-                modifier = Modifier.size(260.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_bg),
-                    contentDescription = "",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillWidth
-                )
-
-
-                Row(
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Text(
-                        text = "00:",
-                        fontSize = 56.sp,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-
-                    //为什么外层需要嵌套一个布局呢？
-
-                    //分钟的两个数字
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = slideInVertically(),
-                        exit = slideOutVertically(),
-                    ) {
-                        Text(
-                            text = "0",
-                            fontSize = 56.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
-
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = slideInVertically(),
-                        exit = slideOutVertically(),
-                    ) {
-                        Text(
-                            text = "0",
-                            fontSize = 56.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
-
-                    Text(
-                        text = ":",
-                        fontSize = 56.sp,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-
-                    //分钟的两个数字
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = slideInVertically(),
-                        exit = slideOutVertically(),
-                    ) {
-                        Text(
-                            text = "0",
-                            fontSize = 40.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
-
-
-                    Box() {
-                        Text(
-                            text = if (timer.value % 2 == 0) {
-                                timer.value.toString()
-                            } else {
-                                if (timer.value - 1 < 0) {
-                                    "9"
-                                } else {
-                                    (timer.value - 1).toString()
-                                }
-                            },
-                            fontSize = 40.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            modifier = Modifier
-                                .width(40.dp)
-                                .alpha(evenAlpha.value)
-                                .offset(y = evenOffset)
-                        )
-
-                        Text(
-                            text = if (timer.value % 2 != 0) {
-                                timer.value.toString()
-                            } else {
-                                if (timer.value - 1 < 0) {
-                                    "9"
-                                } else {
-                                    timer.value.toString()
-                                }
-                            },
-                            fontSize = 40.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            modifier = Modifier
-                                .width(40.dp)
-                                .alpha(oddAloha.value)
-                                .offset(y = oddOffset)
-                        )
-                    }
-
+    Box(
+        modifier = Modifier.width(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = if (timer.value % 2 == 0) {
+                timer.value.toString()
+            } else {
+                if (timer.value - 1 < 0) {
+                    "9"
+                } else {
+                    (timer.value - 1).toString()
                 }
-            }
+            },
+            fontSize = 56.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(evenAlpha.value)
+                .offset(y = evenOffset)
+        )
 
-            Spacer(modifier = Modifier.height(48.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_restart),
-                contentDescription = "",
-                modifier = Modifier
-                    .width(36.dp)
-                    .clickable { timer.value = 0 },
-                contentScale = ContentScale.FillWidth
-            )
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_start),
-                contentDescription = "",
-                modifier = Modifier
-                    .width(100.dp)
-                    .clickable {
-                        visible.value = true
-
-                        if (timer.value == 9) {
-                            timer.value = 0
-                        } else {
-                            timer.value++
-                        }
-                    },
-                contentScale = ContentScale.FillWidth
-            )
-        }
+        Text(
+            text = if (timer.value % 2 != 0) {
+                timer.value.toString()
+            } else {
+                if (timer.value - 1 < 0) {
+                    "9"
+                } else {
+                    timer.value.toString()
+                }
+            },
+            fontSize = 56.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(oddAloha.value)
+                .offset(y = oddOffset)
+        )
     }
 }
 
