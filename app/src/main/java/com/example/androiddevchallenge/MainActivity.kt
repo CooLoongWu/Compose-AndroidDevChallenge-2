@@ -18,14 +18,24 @@ package com.example.androiddevchallenge
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
+@ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,8 +57,33 @@ class MainActivity : AppCompatActivity() {
 }
 
 // Start building your app here!
+@ExperimentalAnimationApi
 @Composable
 fun MyApp() {
+    var visible = remember { mutableStateOf(true) }
+
+    //竖直方向上位移距离
+    val offsetY = 40.dp
+
+    //值从0-9
+    val timer = remember { mutableStateOf(0) }
+
+    //偶数数字（0,2,4,6,8,）
+    val evenAlpha = animateFloatAsState(targetValue = if (timer.value % 2 == 0) 1f else 0f)
+    val evenOffset = if (timer.value % 2 == 0) {
+        -offsetY * (1 - evenAlpha.value)
+    } else {
+        offsetY * (1 - evenAlpha.value)
+    }
+
+    //奇数数字（1,3,5,7,9）
+    val oddAloha = animateFloatAsState(targetValue = if (timer.value % 2 != 0) 1f else 0f)
+    val oddOffset = if (timer.value % 2 != 0) {
+        -offsetY * (1 - oddAloha.value)
+    } else {
+        offsetY * (1 - oddAloha.value)
+    }
+
     Surface(color = MaterialTheme.colors.background) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -58,14 +94,16 @@ fun MyApp() {
             Image(
                 painter = painterResource(id = R.drawable.ic_title),
                 contentDescription = "",
-                modifier = Modifier.width(200.dp),
+                modifier = Modifier.width(240.dp),
                 contentScale = ContentScale.FillWidth
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
+
+
             Box(
-                modifier = Modifier.size(250.dp),
+                modifier = Modifier.size(260.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -75,11 +113,102 @@ fun MyApp() {
                     contentScale = ContentScale.FillWidth
                 )
 
-                Text(
-                    text = "00:03:23",
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
+
+                Row(
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Text(
+                        text = "00:",
+                        fontSize = 56.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+
+                    //为什么外层需要嵌套一个布局呢？
+
+                    //分钟的两个数字
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = slideInVertically(),
+                        exit = slideOutVertically(),
+                    ) {
+                        Text(
+                            text = "0",
+                            fontSize = 56.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = slideInVertically(),
+                        exit = slideOutVertically(),
+                    ) {
+                        Text(
+                            text = "0",
+                            fontSize = 56.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+
+                    Text(
+                        text = ":",
+                        fontSize = 56.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+
+                    //分钟的两个数字
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = slideInVertically(),
+                        exit = slideOutVertically(),
+                    ) {
+                        Text(
+                            text = "0",
+                            fontSize = 40.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+
+
+                    Box() {
+                        Text(
+                            text = if (timer.value % 2 == 0) {
+                                timer.value.toString()
+                            } else {
+                                if (timer.value - 1 < 0) {
+                                    "9"
+                                } else {
+                                    (timer.value - 1).toString()
+                                }
+                            },
+                            fontSize = 40.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier
+                                .width(40.dp)
+                                .alpha(evenAlpha.value)
+                                .offset(y = evenOffset)
+                        )
+
+                        Text(
+                            text = if (timer.value % 2 != 0) {
+                                timer.value.toString()
+                            } else {
+                                if (timer.value - 1 < 0) {
+                                    "9"
+                                } else {
+                                    timer.value.toString()
+                                }
+                            },
+                            fontSize = 40.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier
+                                .width(40.dp)
+                                .alpha(oddAloha.value)
+                                .offset(y = oddOffset)
+                        )
+                    }
+
+                }
             }
 
             Spacer(modifier = Modifier.height(48.dp))
@@ -87,7 +216,9 @@ fun MyApp() {
             Image(
                 painter = painterResource(id = R.drawable.ic_restart),
                 contentDescription = "",
-                modifier = Modifier.width(28.dp),
+                modifier = Modifier
+                    .width(36.dp)
+                    .clickable { timer.value = 0 },
                 contentScale = ContentScale.FillWidth
             )
 
@@ -96,13 +227,24 @@ fun MyApp() {
             Image(
                 painter = painterResource(id = R.drawable.ic_start),
                 contentDescription = "",
-                modifier = Modifier.width(88.dp),
+                modifier = Modifier
+                    .width(100.dp)
+                    .clickable {
+                        visible.value = true
+
+                        if (timer.value == 9) {
+                            timer.value = 0
+                        } else {
+                            timer.value++
+                        }
+                    },
                 contentScale = ContentScale.FillWidth
             )
         }
     }
 }
 
+@ExperimentalAnimationApi
 @Preview("Light Theme", widthDp = 360, heightDp = 640)
 @Composable
 fun LightPreview() {
@@ -111,6 +253,7 @@ fun LightPreview() {
     }
 }
 
+@ExperimentalAnimationApi
 @Preview("Dark Theme", widthDp = 360, heightDp = 640)
 @Composable
 fun DarkPreview() {
@@ -118,3 +261,8 @@ fun DarkPreview() {
         MyApp()
     }
 }
+
+
+//fun getFormatNumber(number: Int): String {
+//        if (number>9)
+//}
